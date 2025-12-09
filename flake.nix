@@ -12,16 +12,49 @@
       builtins.map (
         system: let
           pkgs = nixpkgs.legacyPackages.${system};
+          libPath = with pkgs;
+            lib.makeLibraryPath [
+              libGL
+              vulkan-headers
+              vulkan-loader
+
+              libxkbcommon
+              wayland
+              libdecor
+
+              xorg.libX11
+              xorg.libXScrnSaver
+              xorg.libXtst
+              xorg.libXcursor
+              xorg.libXext
+              xorg.libXfixes
+              xorg.libXi
+              xorg.libXrandr
+
+              libjack2
+              pipewire
+            ];
         in {
           devShells.${system}.default = pkgs.mkShell {
             packages = with pkgs;
               [
+                elfkickers
+                emscripten
                 zig
+                sdl3
               ]
               ++ (pkgs.lib.optionals pkgs.stdenv.isLinux [kcov]);
+
+            LD_LIBRARY_PATH = libPath;
+
+            shellHook = ''
+              source ./tools/sysroot.sh
+            '';
           };
 
           formatter.${system} = pkgs.alejandra;
+
+          packages.${system}.default = pkgs.callPackage ./package.nix {};
         }
       )
       systems

@@ -1,0 +1,131 @@
+name: CI
+
+env:
+  BINARY_NAME: falling
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+concurrency:
+  # Cancels pending runs when a PR gets updated.
+  group: ${{ github.head_ref || github.run_id }}-${{ github.actor }}
+  cancel-in-progress: true
+
+permissions:
+  # Sets permission policy for `GITHUB_TOKEN`
+  contents: write
+
+jobs:
+  build-linux-windows:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-stable
+
+      - run: nix flake check
+
+      - name: Run All Tests
+        run: nix develop -c zig build test --summary all
+
+      - name: Build x86 Linux
+        run: nix develop -c zig build -Dtarget=x86_64-linux -Doptimize=ReleaseSmall --prefix x86_64-linux
+
+      - name: Build aarch64 Linux
+        run: nix develop -c zig build -Dtarget=aarch64-linux -Doptimize=ReleaseSmall --prefix aarch64-linux
+
+      - name: Build x86_64 Windows
+        run: nix develop -c zig build -Dtarget=x86_64-windows -Doptimize=ReleaseSmall --prefix x86_64-windows
+
+      - name: Create Downloads
+        run: |
+          tar -czf x86_64-linux.tar.gz    -C x86_64-linux/bin   ${{ env.BINARY_NAME }}
+          tar -czf aarch64-linux.tar.gz   -C aarch64-linux/bin  ${{ env.BINARY_NAME }}
+          zip -j x86_64-windows.zip x86_64-windows/bin/${{ env.BINARY_NAME }}.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LinuxWindowsBuilds
+          path: |
+            x86_64-linux.tar.gz
+            aarch64-linux.tar.gz
+            x86_64-windows.zip
+
+  build-macos:
+    strategy:
+      fail-fast: false
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-stable
+
+      - run: nix flake check
+
+      - name: Build x86 MacOS
+        run: nix develop -c zig build -Dtarget=x86_64-macos -Doptimize=ReleaseSmall --prefix x86_64-macos
+
+      - name: Build aarch64 MacOS
+        run: nix develop -c zig build -Dtarget=aarch64-macos -Doptimize=ReleaseSmall --prefix aarch64-macos
+
+      - name: Create Downloads
+        run: |
+          tar -czf x86_64-macos.tar.gz    -C x86_64-macos/bin   ${{ env.BINARY_NAME }}
+          tar -czf aarch64-macos.tar.gz   -C aarch64-macos/bin   ${{ env.BINARY_NAME }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MacOSBuilds
+          path: |
+            x86_64-macos.tar.gz
+            aarch64-macos.tar.gz
+  # The `release` job only runs if the push is a tag.
+  # It depends on the `test` job completing successfully.
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-linux-windows, build-macos]
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download Linux/Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: LinuxWindowsBuilds
+
+      - name: Download MacOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: MacOSBuilds
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          body: "Automated release for tag ${{ github.ref }}"
+          files: |
+            x86_64-linux.tar.gz
+            aarch64-linux.tar.gz
+            x86_64-macos.tar.gz
+            aarch64-macos.tar.gz
+            x86_64-windows.zip

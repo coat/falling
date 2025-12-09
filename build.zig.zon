@@ -1,0 +1,21 @@
+.{
+    .name = .falling,
+    .version = "0.0.1",
+    .fingerprint = 0xf43eead434a913a2, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .sdl = .{
+            .url = "git+https://github.com/castholm/SDL.git#2cde21ea89c7b67d6e16f7f1e2faaa6f44618ecb",
+            .hash = "sdl-0.3.3+3.2.28-7uIn9MiRfwFhqxnwBi_vCQlKr82YpwkQBVwdz2uy46S1",
+        },
+        .entt = .{
+            .url = "git+https://github.com/prime31/zig-ecs.git#dbf3647c2cc4f327fe87067e40f8436c7f87f209",
+            .hash = "entt-1.0.0-qJPtbNLVAgDPXaUbyRSsBTK75Cr1WujUA92kToJugWry",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
