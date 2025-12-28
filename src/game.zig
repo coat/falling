@@ -1,12 +1,14 @@
 pub const tile_size = 8;
+pub const header = tile_size * 2;
+pub const shaft_width = 26 * tile_size;
+pub const shaft_height = 22 * tile_size;
+pub const footer = tile_size * 2;
+pub const width: u32 = shaft_width;
+pub const touchpad_height: u32 = tile_size * 17;
+pub const height: u32 = header + shaft_height + footer + if (builtin.os.tag == .emscripten) touchpad_height else 0;
 
 pub const Game = struct {
     pub const name = "falling";
-    pub const header = tile_size * 2;
-    pub const shaft_width = 26 * tile_size;
-    pub const shaft_height = 22 * tile_size;
-    pub const width: u32 = shaft_width;
-    pub const height: u32 = header + shaft_height;
     const default_zoom = 2;
 
     reg: ecs.Registry,
