@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
         .Debug, .ReleaseSafe => false,
         .ReleaseFast, .ReleaseSmall => true,
     };
-    const system_sdl = b.option(bool, "system_sdl", "Use system provided SDL") orelse true;
+    const system_sdl = b.option(bool, "system_sdl", "Use system provided SDL") orelse false;
 
     var system_include_path: ?std.Build.LazyPath = null;
     var lto: ?std.zig.LtoMode = null;
