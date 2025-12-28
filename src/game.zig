@@ -142,8 +142,13 @@ pub const Game = struct {
     pub fn iterate(self: *Game) c.SDL_AppResult {
         while (self.timekeeper.consume()) {
             if (!input.playerInput(&self.reg, &self.dispatcher)) return c.SDL_APP_SUCCESS;
+
+            if (self.state != .paused) {
+                movement.run(&self.reg);
+                animation.run(&self.reg);
+            }
         }
-        self.render() catch return c.SDL_APP_FAILURE;
+        render.render(&self.reg, self.renderer, self.sprites) catch return c.SDL_APP_FAILURE;
 
         self.timekeeper.produce(c.SDL_GetPerformanceCounter());
 
@@ -237,8 +242,18 @@ const falling = @import("root.zig");
 const c = falling.c;
 const errify = falling.errify;
 
+const movement = @import("systems/movement.zig");
 const animation = @import("systems/animation.zig");
 const input = @import("systems/input.zig");
+const render = @import("systems/render.zig");
+
+const components = @import("components.zig");
+const Position = components.Position;
+const InitialPosition = components.InitialPosition;
+const Size = components.Size;
+const Velocity = components.Velocity;
+const Sprite = components.Sprite;
+const BackgroundSprite = components.BackgroundSprite;
 
 const ecs = @import("entt");
 
