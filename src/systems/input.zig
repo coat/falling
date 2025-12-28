@@ -1,6 +1,7 @@
 pub const VirtualController = struct {
     zoom: bool,
     escape: bool,
+    pause: bool,
 
     pub fn fromPhysical(
         self: *VirtualController,
@@ -13,16 +14,19 @@ pub const VirtualController = struct {
     pub const reset: VirtualController = .{
         .zoom = false,
         .escape = false,
+        .pause = false,
     };
 };
 
 pub const PhysicalController = struct {
     k_f1: bool,
     k_esc: bool,
+    k_p: bool,
 
     pub const reset: PhysicalController = .{
         .k_f1 = false,
         .k_esc = false,
+        .k_p = false,
     };
 };
 
@@ -45,6 +49,7 @@ pub fn processKeyboard(reg: *Registry, event: *c.SDL_Event) void {
     switch (event.key.scancode) {
         c.SDL_SCANCODE_F1 => reg.singletons().get(Input).ph_con.k_f1 = down,
         c.SDL_SCANCODE_ESCAPE => reg.singletons().get(Input).ph_con.k_esc = down,
+        c.SDL_SCANCODE_P => reg.singletons().get(Input).ph_con.k_p = down,
         else => {},
     }
 }
@@ -60,8 +65,14 @@ pub fn playerInput(reg: *Registry, dispatcher: *ecs.Dispatcher) bool {
         return false;
     }
 
-    if (v_con.zoom and !prev_vcon.zoom) {
-        dispatcher.trigger(.{falling.ZoomRequest}, .{});
+    if (v_con.pause and !prev_vcon.pause) {
+        dispatcher.trigger(.{falling.Command}, .{.pause});
+    }
+
+    if (builtin.os.tag != .emscripten) {
+        if (v_con.zoom and !prev_vcon.zoom) {
+            dispatcher.trigger(.{falling.Command}, .{.zoom});
+        }
     }
 
     reg.singletons().get(PrevInput).v_con = v_con;
@@ -74,3 +85,5 @@ const c = falling.c;
 
 const ecs = @import("entt");
 const Registry = ecs.Registry;
+
+const builtin = @import("builtin");

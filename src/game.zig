@@ -88,8 +88,8 @@ pub const Game = struct {
         const prev_input: input.PrevInput = .reset;
         game.reg.singletons().add(prev_input);
 
-        var sink = game.dispatcher.sink(.{falling.ZoomRequest});
-        sink.connectBound(game, changeZoom);
+        var sink = game.dispatcher.sink(.{falling.Command});
+        sink.connectBound(game, handleCommand);
 
         {
             const wall = game.reg.create();
@@ -161,34 +161,32 @@ pub const Game = struct {
                 input.processKeyboard(&self.reg, event);
             },
             c.SDL_EVENT_QUIT => return c.SDL_APP_SUCCESS,
+            c.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN => {
+                try errify(c.SDL_SetWindowSize(self.window, @intCast(width * self.zoom), @intCast(height * self.zoom)));
+            },
 
             else => {},
         }
         return c.SDL_APP_CONTINUE;
     }
 
-    pub fn changeZoom(self: *Game, _: falling.ZoomRequest) void {
-        self.zoom += 1;
-        if (self.zoom > 3) self.zoom = 1;
+    pub fn handleCommand(self: *Game, command: falling.Command) void {
+        switch (command) {
+            .pause => {
+                const state = self.state;
+                if (state == .paused) {
+                    self.state = .running;
+                } else if (state == .running) {
+                    self.state = .paused;
+                }
+            },
+            .zoom => {
+                self.zoom += 1;
+                if (self.zoom > 3) self.zoom -= 3;
 
-        errify(c.SDL_SetWindowSize(self.window, @intCast(width * self.zoom), @intCast(height * self.zoom))) catch return;
-    }
-
-    fn render(self: *Game) !void {
-        try errify(c.SDL_SetRenderDrawColor(self.renderer, 0x37, 0x2a, 0x39, 0xff));
-        try errify(c.SDL_RenderClear(self.renderer));
-
-        {
-            try errify(c.SDL_SetRenderDrawColor(self.renderer, 0xf5, 0xe9, 0xbf, 0xff));
-            var w: i32 = undefined;
-            var h: i32 = undefined;
-            try errify(c.SDL_GetWindowSize(self.window, &w, &h));
-            var buf: [32]u8 = undefined;
-            const text = try std.fmt.bufPrintZ(&buf, "{d}x{d}", .{ w, h });
-            try errify(c.SDL_RenderDebugText(self.renderer, 0, 0, text.ptr));
+                errify(c.SDL_SetWindowSize(self.window, @intCast(width * self.zoom), @intCast(height * self.zoom))) catch return;
+            },
         }
-
-        try errify(c.SDL_RenderPresent(self.renderer));
     }
 };
 

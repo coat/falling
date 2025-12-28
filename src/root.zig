@@ -13,7 +13,10 @@ pub const sdl_log = std.log.scoped(.sdl);
 
 pub const Game = @import("game.zig").Game;
 
-pub const ZoomRequest = void;
+pub const Command = enum {
+    pause,
+    zoom,
+};
 
 /// Converts the return value of an SDL function to an error union.
 pub inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(value))) {
