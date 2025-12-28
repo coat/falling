@@ -73,28 +73,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-stable
+      - uses: mlugg/setup-zig@v2
 
-      - run: nix flake check
+      # - uses: cachix/install-nix-action@v31
+      #   with:
+      #     nix_path: nixpkgs=channel:nixos-stable
+      #
+      # - run: nix flake check
 
-      - name: Build x86 MacOS
-        run: nix develop -c zig build -Dtarget=x86_64-macos -Doptimize=ReleaseSmall --prefix x86_64-macos
+      # - name: Build x86 MacOS
+      #   run: nix develop -c zig build -Dtarget=x86_64-macos -Doptimize=ReleaseSmall --prefix x86_64-macos --sysroot "$(xcrun --sdk macosx --show-sdk-path)"
 
       - name: Build aarch64 MacOS
-        run: nix develop -c zig build -Dtarget=aarch64-macos -Doptimize=ReleaseSmall --prefix aarch64-macos
+        run: zig build -Doptimize=ReleaseSmall --prefix aarch64-macos
 
       - name: Create Downloads
         run: |
-          tar -czf x86_64-macos.tar.gz    -C x86_64-macos/bin   ${{ env.BINARY_NAME }}
+          # tar -czf x86_64-macos.tar.gz    -C x86_64-macos/bin   ${{ env.BINARY_NAME }}
           tar -czf aarch64-macos.tar.gz   -C aarch64-macos/bin   ${{ env.BINARY_NAME }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: MacOSBuilds
           path: |
-            x86_64-macos.tar.gz
+            # x86_64-macos.tar.gz
             aarch64-macos.tar.gz
   # The `release` job only runs if the push is a tag.
   # It depends on the `test` job completing successfully.
