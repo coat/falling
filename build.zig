@@ -11,8 +11,7 @@ pub fn build(b: *std.Build) void {
         "strip",
         "Strip the final executable. Default true for fast and small releases",
     ) orelse switch (optimize) {
-        .Debug => false,
-        .ReleaseSafe => false,
+        .Debug, .ReleaseSafe => false,
         .ReleaseFast, .ReleaseSmall => true,
     };
     const system_sdl = b.option(bool, "system_sdl", "Use system provided SDL") orelse false;
