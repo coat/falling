@@ -38,7 +38,7 @@ pub const Game = struct {
             name,
             width * default_zoom,
             height * default_zoom,
-            if (builtin.os.tag == .emscripten) c.SDL_WINDOW_RESIZABLE else 0,
+            0,
             @ptrCast(&window),
             @ptrCast(&renderer),
         ));
