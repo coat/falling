@@ -12,6 +12,10 @@
             .url = "git+https://github.com/prime31/zig-ecs.git#dbf3647c2cc4f327fe87067e40f8436c7f87f209",
             .hash = "entt-1.0.0-qJPtbNLVAgDPXaUbyRSsBTK75Cr1WujUA92kToJugWry",
         },
+        .ulzig = .{
+            .url = "git+https://github.com/coat/ulzig.git#43df2ae569a211dd4e135cf8c8ce3f07592c89c9",
+            .hash = "ulzig-0.3.4-QLNGQXBWAAAVQc7MD219iV1eg72SAH_DesUlzzjjl113",
+        },
     },
     .paths = .{
         "build.zig",

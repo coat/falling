@@ -112,4 +112,12 @@ linkFarm name [
       hash = "sha256-2NWnMwJNl7JzSRq6cym1CJjlEDIlDwvWCfbD+Q1Ig4w=";
     };
   }
+  {
+    name = "ulzig-0.3.4-QLNGQXBWAAAVQc7MD219iV1eg72SAH_DesUlzzjjl113";
+    path = fetchZigArtifact {
+      name = "ulzig";
+      url = "git+https://github.com/coat/ulzig.git#43df2ae569a211dd4e135cf8c8ce3f07592c89c9";
+      hash = "sha256-S0q+V49pqmrJihWLx/5uFiqQlL+u1myiMIegFXI2mqo=";
+    };
+  }
 ]

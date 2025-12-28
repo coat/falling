@@ -16,6 +16,7 @@ pub const Game = struct {
 
     window: *c.SDL_Window,
     renderer: *c.SDL_Renderer,
+    sprites: *c.SDL_Texture,
 
     state: enum {
         running,
@@ -43,6 +44,25 @@ pub const Game = struct {
 
         try errify(c.SDL_SetRenderLogicalPresentation(renderer, width, height, c.SDL_LOGICAL_PRESENTATION_INTEGER_SCALE));
 
+        var sprites_texture: *c.SDL_Texture = undefined;
+        {
+            const compressed_sprites = @embedFile("sprites.bmp.ulz");
+
+            const sprites = try ulz.decode(alloc, compressed_sprites);
+            defer alloc.free(sprites);
+
+            const stream: *c.SDL_IOStream = try errify(c.SDL_IOFromConstMem(sprites.ptr, sprites.len));
+            const surface: *c.SDL_Surface = try errify(c.SDL_LoadBMP_IO(stream, true));
+            defer c.SDL_DestroySurface(surface);
+
+            sprites_texture = try errify(c.SDL_CreateTextureFromSurface(renderer, surface));
+
+            try errify(c.SDL_SetTextureScaleMode(sprites_texture, c.SDL_SCALEMODE_NEAREST));
+
+            errdefer comptime unreachable;
+        }
+        errdefer c.SDL_DestroyTexture(sprites_texture);
+
         var game = try alloc.create(Game);
         errdefer alloc.destroy(game);
 
@@ -56,6 +76,7 @@ pub const Game = struct {
 
             .window = window,
             .renderer = renderer,
+            .sprites = sprites_texture,
         };
 
         const current_input: input.Input = .reset;
@@ -71,6 +92,7 @@ pub const Game = struct {
     }
 
     pub fn deinit(self: *Game) void {
+        c.SDL_DestroyTexture(self.sprites);
         c.SDL_DestroyRenderer(self.renderer);
         c.SDL_DestroyWindow(self.window);
 
@@ -179,6 +201,8 @@ const errify = falling.errify;
 const input = @import("systems/input.zig");
 
 const ecs = @import("entt");
+
+const ulz = @import("ulz");
 
 const std = @import("std");
 const Allocator = std.mem.Allocator;

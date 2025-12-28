@@ -39,6 +39,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     }).module("zig-ecs");
 
+    const ulzig_mod = b.dependency("ulzig", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("ulzig");
+
     const mod = b.addModule(name, .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
@@ -46,8 +51,25 @@ pub fn build(b: *std.Build) void {
         .link_libc = target.result.os.tag == .emscripten,
         .imports = &.{
             .{ .name = "entt", .module = entt_mod },
+            .{ .name = "ulz", .module = ulzig_mod },
         },
     });
+
+    const ulzig_dep = b.dependency("ulzig", .{
+        .target = b.graph.host,
+    });
+
+    const ulz = b.addExecutable(.{
+        .name = "ulz",
+        .root_module = ulzig_dep.module("exe"),
+    });
+
+    const compress_sprites = b.addRunArtifact(ulz);
+    compress_sprites.addArg("-o");
+    const compressed_sprites = compress_sprites.addOutputFileArg("sprites.bmp.ulz");
+    compress_sprites.addFileArg(b.path("assets/sprites.bmp"));
+
+    mod.addAnonymousImport("sprites.bmp.ulz", .{ .root_source_file = compressed_sprites });
 
     if (target.result.os.tag == .windows and target.result.abi == .msvc) {
         // Work around a problematic definition in wchar.h in Windows SDK version 10.0.26100.0
