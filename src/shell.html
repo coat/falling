@@ -7,71 +7,21 @@
     <link rel="stylesheet" href="https://sadbeast.com/main.1.css">
     <title>sadbeast - falling</title>
     <style>
-      body { margin: 0; padding: 0; background-color: #fff; color: #000; }
+      body { margin: 0; padding: 0; background-color: #372a39; color: #f5e9bf; }
+      a:link, a:visited { color: #f5e9bf}
       .emscripten { z-index: 1; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
       div.emscripten { text-align: center; }
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten { width: 416px; height: 384px; border: 0px none; background-color: #000; }
-
-    .loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #FFF;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    }
-      @-webkit-keyframes rotation {
-        from {-webkit-transform: rotate(0deg);}
-        to {-webkit-transform: rotate(360deg);}
+      canvas.emscripten {
+        width: 100%;
+        max-width: 416px;
+        height: auto;
+        border: 0px none;
+        background-color: #372a39;
       }
-      @-moz-keyframes rotation {
-        from {-moz-transform: rotate(0deg);}
-        to {-moz-transform: rotate(360deg);}
-      }
-      @-o-keyframes rotation {
-        from {-o-transform: rotate(0deg);}
-        to {-o-transform: rotate(360deg);}
-      }
-      @keyframes rotation {
-        from {transform: rotate(0deg);}
-        to {transform: rotate(360deg);}
-      }
-
-      #loading {
-        color: #fff;
-        ovorflow: visible;
-        text-align: center;
-        position: fixed;
-        top: 10px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: 0 auto;
-        display: block;
-        width: 300px;
-        height: 200px;
-        background-color: #000;
-        box-sizing: border-box;
-        z-index: 9999;
-      }
-
     </style>
   </head>
   <body onload="main();">
-    <!-- <div id="loading"> -->
-    <!--   <figure style="overflow:visible;" id="spinner"><div class="loader"></div></figure> -->
-    <!--   <div id="status">Loading...</div> -->
-    <!--   <div > -->
-    <!--     <progress value="0" max="100" id="progress" hidden=1></progress>   -->
-    <!--   </div> -->
-    <!-- </div> -->
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-    </div>
-    <p style="text-align: center"><a href="#" onclick="window.module.requestFullscreen(true, true)">Full Screen</a> </p>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     {{{ SCRIPT }}}
     <script type='text/javascript'>
       var canvasElement = document.getElementById('canvas');
