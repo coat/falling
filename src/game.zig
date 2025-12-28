@@ -25,6 +25,7 @@ pub const Game = struct {
         paused,
         menu,
     } = .menu,
+    speed: f32 = 1,
 
     zoom: u8 = default_zoom,
 
@@ -89,6 +90,42 @@ pub const Game = struct {
 
         var sink = game.dispatcher.sink(.{falling.ZoomRequest});
         sink.connectBound(game, changeZoom);
+
+        {
+            const wall = game.reg.create();
+            const position: Position = .{ .x = 0, .y = header };
+            const sprite = Sprite{ .x = 0, .y = 0, .h = tile_size * 2, .w = tile_size };
+            game.reg.add(wall, BackgroundSprite{});
+            game.reg.add(wall, sprite);
+            game.reg.add(wall, Velocity{ .x = 0, .y = -1 * game.speed });
+            game.reg.add(wall, position);
+            game.reg.add(wall, InitialPosition{ .x = position.x, .y = position.y });
+            game.reg.add(wall, Size{ .w = sprite.w, .h = shaft_height + sprite.h });
+        }
+
+        {
+            const wall = game.reg.create();
+            const position: Position = .{ .x = width - tile_size, .y = header };
+            const sprite = Sprite{ .x = 0, .y = 0, .h = tile_size * 2, .w = tile_size, .flip_x = true };
+            game.reg.add(wall, BackgroundSprite{});
+            game.reg.add(wall, sprite);
+            game.reg.add(wall, Velocity{ .x = 0, .y = -1 * game.speed });
+            game.reg.add(wall, position);
+            game.reg.add(wall, InitialPosition{ .x = position.x, .y = position.y });
+            game.reg.add(wall, Size{ .w = sprite.w, .h = shaft_height + sprite.h });
+        }
+
+        {
+            const background = game.reg.create();
+            const position: Position = .{ .x = tile_size, .y = header };
+            const sprite = Sprite{ .x = 0, .y = tile_size * 8, .h = tile_size * 8, .w = tile_size * 8 };
+            game.reg.add(background, BackgroundSprite{});
+            game.reg.add(background, sprite);
+            game.reg.add(background, Velocity{ .x = 0, .y = -0.5 * game.speed });
+            game.reg.add(background, position);
+            game.reg.add(background, InitialPosition{ .x = position.x, .y = position.y });
+            game.reg.add(background, Size{ .w = 24 * tile_size, .h = shaft_height + sprite.h });
+        }
 
         return game;
     }
@@ -200,6 +237,7 @@ const falling = @import("root.zig");
 const c = falling.c;
 const errify = falling.errify;
 
+const animation = @import("systems/animation.zig");
 const input = @import("systems/input.zig");
 
 const ecs = @import("entt");
