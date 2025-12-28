@@ -167,7 +167,7 @@ pub fn build(b: *std.Build) void {
         }).step);
 
         const run_emrun = b.addSystemCommand(&.{"emrun"});
-        run_emrun.addArg(b.pathJoin(&.{ b.install_path, "www", name ++ ".html" }));
+        run_emrun.addArg(b.pathJoin(&.{ b.install_path, "www", "index.html" }));
         if (b.args) |args| run_emrun.addArgs(args);
         run_emrun.step.dependOn(b.getInstallStep());
 
