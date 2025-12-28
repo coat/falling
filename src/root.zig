@@ -39,4 +39,9 @@ pub inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(v
     };
 }
 
+comptime {
+    _ = @import("systems/animation.zig");
+    _ = @import("systems/movement.zig");
+}
+
 const std = @import("std");
