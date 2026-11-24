@@ -205,7 +205,10 @@ fn addExe(b: *std.Build, opts: Options, game: *std.Build.Module) *std.Build.Step
         .name = name,
         .root_module = addAppModule(b, opts, game),
     });
-    if (opts.target.result.ofmt == .coff) addWindowsResources(b, opts, exe.root_module);
+    if (opts.target.result.ofmt == .coff) {
+        exe.subsystem = if (opts.optimize == .debug) .console else .windows;
+        addWindowsResources(b, opts, exe.root_module);
+    }
     return exe;
 }
 
