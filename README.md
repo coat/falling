@@ -12,13 +12,15 @@ operating system. `falling.zip` is for [PortMaster](http://portmaster.games/).
 
 `nix run github:coat/falling` for more civilized folks.
 
-Use arrow keys or `a` or `d` to move left or right. Try and avoid spiky
-platforms and the spikes at the top. Land on other platforms to restore health.
-Game is over when you fall to the bottom.
+Use arrow keys to move left or right. Game controllers are supported. Hit `p`
+or Start button to pause. `Esc` or Back button to quit game from main menu.
+
+Try and avoid spiky platforms and the spikes at the top. Land on other
+platforms to restore health. Game is over when you fall to the bottom.
 
 ## building
 
-### Requirements
+### preparing
 
 1. Zig 0.17.1
 2. emscripten (optional to build web version)
