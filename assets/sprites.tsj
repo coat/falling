@@ -1,0 +1,16 @@
+{ "backgroundcolor":"#372a39",
+ "columns":16,
+ "image":"tiles.png",
+ "imageheight":128,
+ "imagewidth":128,
+ "margin":0,
+ "name":"sprites",
+ "spacing":0,
+ "tilecount":256,
+ "tiledversion":"1.12.2",
+ "tileheight":8,
+ "tilewidth":8,
+ "transparentcolor":"#372a39",
+ "type":"tileset",
+ "version":"1.10"
+}

@@ -83,6 +83,8 @@
           };
 
           formatter.${system} = pkgs.alejandra;
+
+          packages.${system}.default = pkgs.callPackage ./package.nix {};
         }
       )
       systems

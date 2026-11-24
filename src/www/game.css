@@ -1,0 +1,31 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+
+body.playing {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior: none;
+  display: grid;
+  place-items: center;
+  height: 100dvh;
+  background: #372a39;
+  color: #f5e9bf;
+}
+
+canvas {
+  display: block;
+  width:  100vw;
+  height: 100dvh;
+  border: 0 none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  image-rendering: auto;
+}

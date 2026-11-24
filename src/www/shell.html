@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <title>falling</title>
+    <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="stylesheet" href="game.css" />
+    <style>
+      #status {
+        position: fixed;
+        inset: auto 0 0 0;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="playing">
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    <div id="status">loading...</div>
+    {{{ SCRIPT }}}
+    <script src="boot.js"></script>
+    <script type="text/javascript">
+      const status = document.getElementById("status");
+      falling
+        .start(document.getElementById("canvas"))
+        .then(() => status.remove())
+        .catch((err) => {
+          status.textContent = `failed to start: ${err}`;
+        });
+    </script>
+  </body>
+</html>

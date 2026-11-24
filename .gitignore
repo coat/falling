@@ -1,0 +1,9 @@
+result
+
+.zig-cache
+zig-out/
+zig-pkg/
+
+.emscripten
+
+assets/falling.tiled-session

@@ -1,0 +1,21 @@
+{ "columns":16,
+ "image":"tiles.png",
+ "imageheight":128,
+ "imagewidth":128,
+ "margin":0,
+ "name":"tiles",
+ "spacing":0,
+ "tilecount":256,
+ "tiledversion":"1.11.2",
+ "tileheight":8,
+ "tilewidth":8,
+ "transformations":
+    {
+     "hflip":true,
+     "preferuntransformed":false,
+     "rotate":false,
+     "vflip":true
+    },
+ "type":"tileset",
+ "version":"1.10"
+}

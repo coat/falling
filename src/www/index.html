@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <title>falling</title>
+    <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="stylesheet" href="game.css" />
+    <style>
+      #launcher {
+        position: fixed;
+        inset: 0;
+        overflow: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        box-sizing: border-box;
+      }
+
+      .card {
+        width: min(30rem, 100%);
+        border: 1px solid;
+        padding: 1.75rem;
+      }
+
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        letter-spacing: 0.2em;
+      }
+
+      .goal {
+        margin: 1rem 0 1.5rem;
+        line-height: 1.6;
+        font-size: 0.9rem;
+      }
+
+      button {
+        display: block;
+        width: 100%;
+        padding: 0.9rem;
+        font: inherit;
+        font-size: 1.1rem;
+        letter-spacing: 0.25em;
+        border: 0 none;
+        cursor: pointer;
+        color: #f5e9bf;
+        background-color: #788374;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 0.35rem 1.25rem;
+        margin: 1.75rem 0 0;
+        font-size: 0.85rem;
+      }
+      dt {
+        font-weight: bold;
+      }
+      dd {
+        margin: 0;
+      }
+
+      .footnote {
+        margin: 1.5rem 0 0;
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+      .footnote a {
+      }
+
+      #status {
+        position: fixed;
+        inset: auto 0 0 0;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        text-align: center;
+      }
+
+      body:not(.playing) canvas {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+
+    <main id="launcher">
+      <div class="card">
+        <h1>falling</h1>
+        <p class="goal">
+          A remake of NS-SHAFT. Make your way down an endless shaft avoiding spikes, and the bottom of the screen.
+        </p>
+
+        <button id="play" type="button" disabled>loading</button>
+
+        <dl>
+          <dt>A D / ← →</dt>
+          <dd>Move left/right</dd>
+          <dt>ESC / p</dt>
+          <dd>Pause</dd>
+        </dl>
+
+        <p class="footnote">
+          Prefer it windowed? <a href="falling.html">Skip this page</a>.
+        </p>
+      </div>
+    </main>
+
+    <div id="status" hidden></div>
+
+    <script async src="falling.js"></script>
+    <script src="boot.js"></script>
+    <script type="text/javascript">
+      const play = document.getElementById("play");
+      const status = document.getElementById("status");
+
+      falling.ready.then(() => {
+        play.disabled = false;
+        play.textContent = "play";
+      });
+
+      function enterFullscreen() {
+        const root = document.documentElement;
+        if (!root.requestFullscreen) return;
+        root.requestFullscreen().catch(() => {
+          const retry = () => {
+            removeEventListener("pointerdown", retry);
+            removeEventListener("keydown", retry);
+            enterFullscreen();
+          };
+          addEventListener("pointerdown", retry);
+          addEventListener("keydown", retry);
+        });
+      }
+
+      play.addEventListener("click", () => {
+        document.body.classList.add("playing");
+        document.getElementById("launcher").remove();
+        status.hidden = false;
+        status.textContent = "loading...";
+
+        falling.start(document.getElementById("canvas")).then(
+          () => {
+            status.remove();
+            enterFullscreen();
+          },
+          (err) => {
+            status.textContent = `failed to start: ${err}`;
+          },
+        );
+      });
+    </script>
+  </body>
+</html>

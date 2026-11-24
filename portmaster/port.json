@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "name": "falling.zip",
+  "items": [
+    "falling.sh",
+    "falling"
+  ],
+  "items_opt": null,
+  "attr": {
+    "title": "falling",
+    "desc": "A clone of NS-SHAFT (https://www.nagi-p.com/v1/eng/nsshaft.html)",
+    "inst": "Ready to run.",
+    "genres": [
+      "platformer"
+    ],
+    "porter": [
+      "sadbeast"
+    ],
+    "image": {},
+    "rtr": true,
+    "runtime": null,
+    "reqs": [],
+    "arch": [
+      "aarch64"
+    ]
+  }
+}

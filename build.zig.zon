@@ -1,0 +1,35 @@
+.{
+    .name = .falling,
+    .version = "0.0.1",
+    .fingerprint = 0xf43eead4ad3f38d8, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.17.0-dev.1824+7988f7952",
+    .dependencies = .{
+        .translate_c = .{
+            .url = "git+https://codeberg.org/ziglang/translate-c?ref=zig-0.17.x#cfac21f3199b2b02ce3fd7db652aa456421fe4ab",
+            .hash = "translate_c-2.0.2-Q_BUWvBNBwDnyehSiuAJmdFcMYHYGA-Jc3KiYdrV2Dqx",
+        },
+        .sdl = .{
+            .url = "git+https://github.com/coat/SDL.git?ref=android#00b912115a6820e7c611032e2329a567f462b28b",
+            .hash = "sdl-0.5.4+3.4.16-SDL--j3AqwHtXDaXS5jMcmiIde_XU5CFr35mav9leSki",
+            .lazy = true,
+        },
+        .android = .{
+            .url = "git+https://github.com/coat/zig-android-sdk.git?ref=zig-0.17.0#22bc9bfc644b6ed64f5701fdc4acfa8a5f7fa2a5",
+            .hash = "android-0.3.0-7iz7QhoaAgC7CZhUWfLy8dWYPxSeudm3yIeH2ls3sgFK",
+            .lazy = true,
+        },
+        .rc = .{
+            .url = "git+https://codeberg.org/ziglang/rc?ref=zig-0.17.x#a8a3b3cebbe6e414fa12d6ad028c56a3a349c75e",
+            .hash = "rc-0.0.0-rMftL71EAAAxhe4swpM5rrfcmC9k_j7ApwJJPRssBiDL",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        // For example...
+        //"LICENSE",
+        //"README.md",
+    },
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<gameList>
+  <game>
+    <path>./falling.sh</path>
+    <name>falling</name>
+    <desc>A clone of NS-SHAFT (https://www.nagi-p.com/v1/eng/nsshaft.html)</desc>
+    <developer>sadbeast</developer>
+    <publisher>sadbeast</publisher>
+    <genre>Platformer</genre>
+    <image>./falling/screenshot.png</image>
+  </game>
+</gameList>
