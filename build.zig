@@ -317,9 +317,25 @@ fn addAndroid(b: *std.Build, opts: Options) void {
         .ndk_version = "29.0.14206865",
     });
 
-    // A throwaway debug key: enough for `adb install`, not for distribution.
-    apk.setKeyStore(sdk.createKeyStore(.example));
-    apk.setAndroidManifest(b.path("android/AndroidManifest.xml"));
+    const keystore = b.option(
+        []const u8,
+        "android_keystore",
+        "Sign the APK with this keystore, its password read from $ANDROID_KEYSTORE_PASSWORD. " ++
+            "Defaults to a throwaway debug key",
+    );
+    if (keystore) |path| {
+        // Exits instead of adding a fail step, which would leave the steps and
+        // options below undeclared and hide this error behind "no step named".
+        const password = b.graph.environ_map.get("ANDROID_KEYSTORE_PASSWORD") orelse {
+            std.log.err("-Dandroid_keystore needs ANDROID_KEYSTORE_PASSWORD set", .{});
+            std.process.exit(1);
+        };
+        apk.setKeyStore(.{ .file = .{ .cwd_relative = path }, .password = password });
+    } else {
+        // A throwaway debug key: enough for `adb install`, not for distribution.
+        apk.setKeyStore(sdk.createKeyStore(.example));
+    }
+    apk.setAndroidManifest(androidManifest(b));
     apk.addResourceDirectory(b.path("android/res"));
 
     const every_abi = b.option(
@@ -371,6 +387,19 @@ fn addAndroid(b: *std.Build, opts: Options) void {
     adb_start.step.dependOn(&sdk.addAdbInstall(installed.source).step);
     const run_step = b.step("run", "Install the APK on a connected device and start it");
     run_step.dependOn(&adb_start.step);
+}
+
+/// The manifest with build.zig.zon's version filled in, so each release
+/// installs over the one before it.
+fn androidManifest(b: *std.Build) std.Build.LazyPath {
+    const version = comptime std.SemanticVersion.parse(@import("./build.zig.zon").version) catch unreachable;
+    // Android compares versionCode, which must grow with every release.
+    const code = version.major * 10000 + version.minor * 100 + version.patch;
+
+    var manifest: []const u8 = @embedFile("android/AndroidManifest.xml");
+    manifest = std.mem.replaceOwned(u8, b.allocator, manifest, "@VERSION_CODE@", b.fmt("{d}", .{code})) catch @panic("OOM");
+    manifest = std.mem.replaceOwned(u8, b.allocator, manifest, "@VERSION_NAME@", b.fmt("{f}", .{version})) catch @panic("OOM");
+    return b.addWriteFiles().add("AndroidManifest.xml", manifest);
 }
 
 fn addPortmaster(b: *std.Build, opts: Options) void {
