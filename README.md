@@ -7,10 +7,14 @@ A remake of [NS-SHAFT](https://www.nagi-p.com/v1/eng/nsshaft.html) written in Zi
 ## playing
 
 [Play online](https://coat.github.io/falling) or
-[download](https://github.com/coat/falling/releases) a static binary for your
-operating system.
+[download](https://github.com/coat/falling/releases) a binary for your
+operating system. `falling.zip` is for [PortMaster](http://portmaster.games/).
 
 `nix run github:coat/falling` for more civilized folks.
+
+Use arrow keys or `a` or `d` to move left or right. Try and avoid spiky
+platforms and the spikes at the top. Land on other platforms to restore health.
+Game is over when you fall to the bottom.
 
 ## building
 
@@ -28,6 +32,13 @@ true.
 
 `zig build -Dtarget=ReleaseSmall` and the game will be in
 `zig-out/bin/falling`.
+
+## procrastinating
+
+- [ ] fix janky trampoline animation
+- [ ] add animations for conveyor belts
+- [ ] different difficulty levels
+- [ ] local multi-player
 
 ## crediting
 
