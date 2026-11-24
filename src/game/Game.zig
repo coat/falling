@@ -102,13 +102,13 @@ pub fn floor(self: Game) u32 {
 }
 
 pub fn scrollSpeed(self: Game) f32 {
-    const d: f32 = @floatFromInt(@intFromEnum(self.difficulty));
+    const d: f32 = @floatFromInt(@backingInt(self.difficulty));
     const f: f32 = @floatFromInt(self.floor());
     return refSpeed(d + 2 + f / 80);
 }
 
 fn platformLevel(self: Game) u32 {
-    return @min(4, @intFromEnum(self.difficulty) + self.floor() / 40 - 1);
+    return @min(4, @backingInt(self.difficulty) + self.floor() / 40 - 1);
 }
 
 const platform_spacing = cell * 3;

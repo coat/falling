@@ -61,25 +61,36 @@
           libPath = with pkgs;
             lib.makeLibraryPath libs;
         in {
-          devShells.${system}.default = pkgs.mkShell {
-            LD_LIBRARY_PATH = libPath;
-            ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-            JAVA_HOME = pkgs.jdk17.home;
+          devShells.${system} = {
+            default = pkgs.mkShell {
+              LD_LIBRARY_PATH = libPath;
+              ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
+              JAVA_HOME = pkgs.jdk17.home;
 
-            packages = with pkgs;
-              [
-                androidSdk
-                emscripten
-                jdk17
-                sdl3
-                zip
-                zig
-              ]
-              ++ (pkgs.lib.optionals stdenv.hostPlatform.isLinux [elfkickers kcov]);
+              packages = with pkgs;
+                [
+                  androidSdk
+                  emscripten
+                  jdk17
+                  sdl3
+                  zip
+                  zig
+                ]
+                ++ (pkgs.lib.optionals stdenv.hostPlatform.isLinux [elfkickers kcov]);
 
-            shellHook = ''
-              source ./tools/sysroot.sh
-            '';
+              shellHook = ''
+                source ./tools/sysroot.sh
+              '';
+            };
+
+            # Only what `zig build -Dandroid` needs, for CI: skips emscripten and
+            # the sysroot the default shell builds on entry.
+            android = pkgs.mkShell {
+              ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
+              JAVA_HOME = pkgs.jdk17.home;
+
+              packages = [androidSdk pkgs.jdk17 pkgs.zig];
+            };
           };
 
           formatter.${system} = pkgs.alejandra;
