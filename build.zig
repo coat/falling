@@ -303,6 +303,21 @@ fn addWeb(b: *std.Build, opts: Options, game: *std.Build.Module) void {
 }
 
 fn addAndroid(b: *std.Build, opts: Options) void {
+    // Declared before the early returns: on the first run the lazy android
+    // package is not fetched yet, and an undeclared -D option fails the build
+    // before Zig gets to fetch it.
+    const keystore = b.option(
+        []const u8,
+        "android_keystore",
+        "Sign the APK with this keystore, its password read from $ANDROID_KEYSTORE_PASSWORD. " ++
+            "Defaults to a throwaway debug key",
+    );
+    const every_abi = b.option(
+        bool,
+        "android_abis",
+        "Put every Android ABI in the APK (x86_64, armeabi-v7a, x86) instead of arm64-v8a alone",
+    ) orelse false;
+
     if (b.graph.environ_map.get("ANDROID_HOME") == null) {
         b.getInstallStep().dependOn(&b.addFail("ANDROID_HOME is not set.").step);
         return;
@@ -317,12 +332,6 @@ fn addAndroid(b: *std.Build, opts: Options) void {
         .ndk_version = "29.0.14206865",
     });
 
-    const keystore = b.option(
-        []const u8,
-        "android_keystore",
-        "Sign the APK with this keystore, its password read from $ANDROID_KEYSTORE_PASSWORD. " ++
-            "Defaults to a throwaway debug key",
-    );
     if (keystore) |path| {
         // Exits instead of adding a fail step, which would leave the steps and
         // options below undeclared and hide this error behind "no step named".
@@ -337,12 +346,6 @@ fn addAndroid(b: *std.Build, opts: Options) void {
     }
     apk.setAndroidManifest(androidManifest(b));
     apk.addResourceDirectory(b.path("android/res"));
-
-    const every_abi = b.option(
-        bool,
-        "android_abis",
-        "Put every Android ABI in the APK (x86_64, armeabi-v7a, x86) instead of arm64-v8a alone",
-    ) orelse false;
 
     const targets = android.resolveTargets(b, .{
         .default_target = opts.target,
